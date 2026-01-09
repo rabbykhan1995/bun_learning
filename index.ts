@@ -1,23 +1,17 @@
-interface User {
-  name: string;
-  email: string | null | undefined;
-  age: number | null | undefined;
-  address: string;
-  id: number;
-}
+import express from "express";
+import server from "./routes/allRoute";
+import cors from "cors";
 
-const rabby: User = {
-  name: "rabby khan",
-  email: "",
-  age: undefined,
-  address: "",
-  id: 5,
-};
-
-const modifyName = <U extends { name: string }>(user: U) => {
-  return (user.name = "abc");
-};
-
-modifyName(rabby);
-
-console.log(rabby.name);
+server.use(express.json());
+server.use(
+  cors({
+    origin: "http://localhost:5173", // অথবা তোমার frontend URL
+  })
+);
+server.listen(3000, (err?: Error) => {
+  if (err) {
+    console.log(err);
+  } else {
+    console.log("server is running on port 3000");
+  }
+});
