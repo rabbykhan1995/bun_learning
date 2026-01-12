@@ -1,0 +1,21 @@
+import type { Request, Response } from "express";
+import type { CreateProduct, Product } from "../types/product.type";
+import { createProduct } from "../models/product.model";
+
+export class ProductController {
+  static async create(req: Request, res: Response) {
+    const product: CreateProduct = req.body;
+
+    // later will come from microservice
+    const images: string[] = ["demo1.img", "demo2.img", "demo3.img"];
+    const thumbnail: string = "thumbnail.img";
+
+    const newProduct: Product = await createProduct(product, images, thumbnail);
+
+    return res.status(201).json({
+      success: true,
+      message: "Product created successfully",
+      data: newProduct,
+    });
+  }
+}

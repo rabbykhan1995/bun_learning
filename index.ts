@@ -1,18 +1,21 @@
 import express from "express";
-import server from "./routes/allRoute";
+import allRoutes from "./routes/allRoute";
+
 import cors from "cors";
 import { ApiError } from "./utils/ApiError";
 
-server.use(express.json());
+const server = express();
 server.use(
   cors({
     origin: "http://localhost:5173",
   })
 );
+
+server.use(express.json());
+server.use(allRoutes);
 // this portion is used for centralized error handling
 server.use((err: any, req: any, res: any, next: any) => {
-  console.error(err);
-
+  console.log(err);
   if (err instanceof ApiError) {
     return res.status(err.statusCode).json({
       success: false,

@@ -8,12 +8,13 @@ export const validate =
       req.body = schema.parse(req.body);
       next();
     } catch (error: any) {
+      const message = error.issues
+        .map((e: any) => `${e.path.join(".")} ${e.message.toLowerCase()}`)
+        .join(", ");
+
       return res.status(400).json({
         success: false,
-        errors: error.errors.map((e: any) => ({
-          field: e.path[0],
-          message: e.message,
-        })),
+        message,
       });
     }
   };
