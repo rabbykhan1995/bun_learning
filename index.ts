@@ -1,13 +1,30 @@
 import express from "express";
 import server from "./routes/allRoute";
 import cors from "cors";
+import { ApiError } from "./utils/ApiError";
 
 server.use(express.json());
 server.use(
   cors({
-    origin: "http://localhost:5173", // অথবা তোমার frontend URL
+    origin: "http://localhost:5173",
   })
 );
+// this portion is used for centralized error handling
+server.use((err: any, req: any, res: any, next: any) => {
+  console.error(err);
+
+  if (err instanceof ApiError) {
+    return res.status(err.statusCode).json({
+      success: false,
+      message: err.message,
+    });
+  }
+  res.status(500).json({
+    success: false,
+    message: "Internal Server Error",
+  });
+});
+
 server.listen(3000, (err?: Error) => {
   if (err) {
     console.log(err);
