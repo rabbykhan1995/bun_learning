@@ -1,6 +1,10 @@
 import type { Request, Response } from "express";
-import type { CreateProduct, Product } from "../types/product.type";
-import { createProduct } from "../models/product.model";
+import type {
+  CreateProduct,
+  Product,
+  ProductList,
+} from "../types/product.type";
+import { createProduct, getProducts } from "../models/product.model";
 
 export class ProductController {
   static async create(req: Request, res: Response) {
@@ -16,6 +20,24 @@ export class ProductController {
       success: true,
       message: "Product created successfully",
       data: newProduct,
+    });
+  }
+
+  static async list(req: Request, res: Response) {
+    const page = Number(req.query.page) || 1;
+    const limit = Number(req.query.limit) || 10;
+    const search = String(req.query.search || "");
+    const barcode = String(req.query.barcode || "");
+
+    const { data, total } = await getProducts(page, limit, search, barcode);
+
+    return res.status(201).json({
+      success: true,
+      message: "Product fetched successfully",
+      data,
+      total,
+      page,
+      limit,
     });
   }
 }

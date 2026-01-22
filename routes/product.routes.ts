@@ -6,9 +6,11 @@ import { ProductController } from "../controllers/product.controller";
 
 const router = express.Router();
 
-router.post(
-  "/create",
-  validate(createProductSchema),
-  asyncHandler(ProductController.create)
-);
+router
+  .post(
+    "/create",
+    validate(createProductSchema),
+    asyncHandler(ProductController.create),
+  )
+  .get("/list", asyncHandler(ProductController.list));
 export default router;

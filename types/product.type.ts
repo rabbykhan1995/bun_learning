@@ -10,6 +10,7 @@ export type Product = {
   slug: string;
   categoryName: string;
   categoryID: string;
+  barcode: string | null;
   thumbnail: string | null;
   images: string[];
 };
@@ -17,4 +18,27 @@ export type Product = {
 export type CreateProduct = Omit<
   Product,
   "id" | "slug" | "thumbnail" | "images"
+>;
+
+export type ProductListItem = Pick<
+  Product,
+  | "id"
+  | "name"
+  | "salePrice"
+  | "purchasePrice"
+  | "slug"
+  | "thumbnail"
+  | "barcode"
+>;
+
+export type ProductList = ProductListItem[];
+
+export type ProductListQuery = {
+  name: string | null;
+  limit: number;
+  page: number;
+};
+
+export type UpdateProduct = Partial<
+  Pick<Product, "name" | "salePrice" | "purchasePrice">
 >;
