@@ -13,7 +13,7 @@ const createProductsTable = async () => {
       id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
       name TEXT NOT NULL,
       slug TEXT UNIQUE DEFAULT '',
-      barcode TEXT UNIQUE DEFAULT '',
+      barcode TEXT UNIQUE,
       sale_price NUMERIC NOT NULL,
       purchase_price NUMERIC NOT NULL,
       stock INTEGER NOT NULL,
@@ -33,6 +33,7 @@ export const createProduct = async (
   images: string[],
   thumbnail: string,
 ): Promise<Product> => {
+  console.log(product);
   // Step 1: Ensure table exists
   await createProductsTable();
   let slug = slugify(product.name, { lower: true });
@@ -46,31 +47,41 @@ export const createProduct = async (
       slug,
     ]);
   }
-  console.log(product);
+
+  if (product.barcode) {
+    const barcodeExists = await pool.query(
+      `SELECT id FROM products WHERE barcode = $1`,
+      [product.barcode],
+    );
+
+    if (barcodeExists.rows.length > 0) {
+      throw new Error("This barcode already exists");
+    }
+  }
 
   const result = await pool.query(
     `
-    INSERT INTO products
-    (
-      name,
-      slug
-      sale_price,
-      purchase_price,
-      stock,
-      unit_name,
-      unit_id,
-      category_name,
-      category_id,
-      images,
-      thumbnail, 
-      barcode
-    )
-    VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10, $11,$12)
-    RETURNING *;
-    `,
+  INSERT INTO products
+  (
+    name,
+    slug,
+    sale_price,
+    purchase_price,
+    stock,
+    unit_name,
+    unit_id,
+    category_name,
+    category_id,
+    images,
+    thumbnail, 
+    barcode
+  )
+  VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)
+  RETURNING *
+  `,
     [
       product.name,
-      slug,
+      slug, // generate slug dynamically
       product.salePrice,
       product.purchasePrice,
       product.stock,
@@ -78,9 +89,9 @@ export const createProduct = async (
       product.unitID,
       product.categoryName,
       product.categoryID,
-      images,
-      product.barcode,
-      thumbnail,
+      images || [], // must be an array
+      thumbnail || null, // optional
+      product.barcode, // optional
     ],
   );
 

@@ -9,6 +9,7 @@ export const createProductSchema = z.object({
   categoryName: z.string().min(1, "Category Must required"),
   categoryID: z.string().min(1, "Category Must required"),
   stock: z.number().positive("Stock must be valid"),
+  barcode: z.string().min(1, "barcode cannot be empty").optional(),
 });
 
 export type CreateProductInput = z.infer<typeof createProductSchema>;
